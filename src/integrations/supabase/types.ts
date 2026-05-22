@@ -14,16 +14,245 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      products: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          price: number
+          reorder_level: number
+          shop_id: string
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          price: number
+          reorder_level?: number
+          shop_id: string
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number
+          reorder_level?: number
+          shop_id?: string
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sale_items: {
+        Row: {
+          id: string
+          line_total: number
+          product_id: string | null
+          product_name: string
+          quantity: number
+          sale_id: string
+          unit_price: number
+        }
+        Insert: {
+          id?: string
+          line_total: number
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          sale_id: string
+          unit_price: number
+        }
+        Update: {
+          id?: string
+          line_total?: number
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          sale_id?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          created_at: string
+          customer_phone: string
+          id: string
+          payhero_checkout_request_id: string | null
+          payhero_reference: string | null
+          payment_status: Database["public"]["Enums"]["payment_status_enum"]
+          shop_id: string
+          sold_at: string
+          total_amount: number
+        }
+        Insert: {
+          created_at?: string
+          customer_phone: string
+          id?: string
+          payhero_checkout_request_id?: string | null
+          payhero_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status_enum"]
+          shop_id: string
+          sold_at?: string
+          total_amount: number
+        }
+        Update: {
+          created_at?: string
+          customer_phone?: string
+          id?: string
+          payhero_checkout_request_id?: string | null
+          payhero_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status_enum"]
+          shop_id?: string
+          sold_at?: string
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shops: {
+        Row: {
+          created_at: string
+          id: string
+          owner_name: string
+          payhero_channel_id: number | null
+          phone: string
+          pin_failed_attempts: number
+          pin_hash: string
+          pin_locked_until: string | null
+          pin_valid_until: string | null
+          shop_name: string
+          subscription_expiry: string
+          subscription_status: Database["public"]["Enums"]["subscription_status_enum"]
+          till_number: string | null
+          till_type: Database["public"]["Enums"]["till_type_enum"] | null
+          trial_start: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_name: string
+          payhero_channel_id?: number | null
+          phone: string
+          pin_failed_attempts?: number
+          pin_hash: string
+          pin_locked_until?: string | null
+          pin_valid_until?: string | null
+          shop_name: string
+          subscription_expiry?: string
+          subscription_status?: Database["public"]["Enums"]["subscription_status_enum"]
+          till_number?: string | null
+          till_type?: Database["public"]["Enums"]["till_type_enum"] | null
+          trial_start?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_name?: string
+          payhero_channel_id?: number | null
+          phone?: string
+          pin_failed_attempts?: number
+          pin_hash?: string
+          pin_locked_until?: string | null
+          pin_valid_until?: string | null
+          shop_name?: string
+          subscription_expiry?: string
+          subscription_status?: Database["public"]["Enums"]["subscription_status_enum"]
+          till_number?: string | null
+          till_type?: Database["public"]["Enums"]["till_type_enum"] | null
+          trial_start?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_payments: {
+        Row: {
+          amount: number
+          id: string
+          paid_at: string
+          payhero_checkout_request_id: string | null
+          payhero_reference: string | null
+          payment_status: Database["public"]["Enums"]["payment_status_enum"]
+          shop_id: string
+        }
+        Insert: {
+          amount: number
+          id?: string
+          paid_at?: string
+          payhero_checkout_request_id?: string | null
+          payhero_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status_enum"]
+          shop_id: string
+        }
+        Update: {
+          amount?: number
+          id?: string
+          paid_at?: string
+          payhero_checkout_request_id?: string | null
+          payhero_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status_enum"]
+          shop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_payments_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_shop_id: { Args: never; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      payment_status_enum: "pending" | "completed" | "failed" | "cancelled"
+      subscription_status_enum: "trial" | "active" | "expired"
+      till_type_enum: "paybill" | "till" | "bank"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +379,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      payment_status_enum: ["pending", "completed", "failed", "cancelled"],
+      subscription_status_enum: ["trial", "active", "expired"],
+      till_type_enum: ["paybill", "till", "bank"],
+    },
   },
 } as const
