@@ -10,33 +10,44 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicWebhooksPayheroRouteImport } from './routes/api/public/webhooks/payhero'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhooksPayheroRoute =
+  ApiPublicWebhooksPayheroRouteImport.update({
+    id: '/api/public/webhooks/payhero',
+    path: '/api/public/webhooks/payhero',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/webhooks/payhero': typeof ApiPublicWebhooksPayheroRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/webhooks/payhero': typeof ApiPublicWebhooksPayheroRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/webhooks/payhero': typeof ApiPublicWebhooksPayheroRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/public/webhooks/payhero'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/public/webhooks/payhero'
+  id: '__root__' | '/' | '/api/public/webhooks/payhero'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicWebhooksPayheroRoute: typeof ApiPublicWebhooksPayheroRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +59,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/payhero': {
+      id: '/api/public/webhooks/payhero'
+      path: '/api/public/webhooks/payhero'
+      fullPath: '/api/public/webhooks/payhero'
+      preLoaderRoute: typeof ApiPublicWebhooksPayheroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicWebhooksPayheroRoute: ApiPublicWebhooksPayheroRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
