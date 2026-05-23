@@ -1,15 +1,17 @@
 const BASE_URL = process.env.PAYHERO_BASE_URL || "https://backend.payhero.co.ke/api/v2";
 
 function basicAuth(): string {
-  const u = process.env.PAYHERO_API_USERNAME ?? "";
-  const p = process.env.PAYHERO_API_PASSWORD ?? "";
+  const u = process.env.PAYHERO_API_USERNAME;
+  const p = process.env.PAYHERO_API_PASSWORD;
+  if (!u || !p) throw new Error("Missing PayHero API credentials");
   return "Basic " + Buffer.from(`${u}:${p}`).toString("base64");
 }
 
 export function getCallbackUrl(): string {
   const explicit = process.env.PAYHERO_CALLBACK_URL;
   if (explicit) return explicit;
-  const projectId = process.env.LOVABLE_PROJECT_ID || "b7d37af9-96b4-4430-a1af-163c430b0d09";
+  const projectId = process.env.LOVABLE_PROJECT_ID;
+  if (!projectId) throw new Error("LOVABLE_PROJECT_ID not configured");
   return `https://project--${projectId}.lovable.app/api/public/webhooks/payhero`;
 }
 
@@ -30,6 +32,7 @@ export interface RegisterChannelParams {
 
 export async function registerPaymentChannel(params: RegisterChannelParams): Promise<{ channel_id: number; raw: unknown }> {
   const accountId = Number(process.env.PAYHERO_ACCOUNT_ID);
+  if (!accountId || Number.isNaN(accountId)) throw new Error("Invalid PAYHERO_ACCOUNT_ID");
   const body = {
     channel_type: params.channel_type,
     short_code: params.short_code,
@@ -52,8 +55,8 @@ export async function registerPaymentChannel(params: RegisterChannelParams): Pro
     throw new Error(`PayHero register channel failed (${res.status}): ${text || res.statusText}`);
   }
   const channel_id = Number(json.channel_id ?? json.id ?? json.data?.channel_id ?? json.data?.id);
-  if (!channel_id || Number.isNaN(channel_id)) {
-    throw new Error(`PayHero did not return a channel id: ${text}`);
+  if (Number.isNaN(channel_id)) {
+    throw new Error(`PayHero did not return a valid channel id: ${text}`);
   }
   return { channel_id, raw: json };
 }
@@ -91,9 +94,13 @@ export async function sendStkPush(params: StkPushParams): Promise<{ reference?: 
   if (!res.ok) {
     throw new Error(`PayHero STK push failed (${res.status}): ${text || res.statusText}`);
   }
+  const checkout_request_id = json.CheckoutRequestID ?? json.checkout_request_id ?? json.data?.CheckoutRequestID;
+  if (!checkout_request_id) {
+    throw new Error(`PayHero STK push did not return checkout_request_id: ${text}`);
+  }
   return {
     reference: json.reference ?? json.data?.reference,
-    checkout_request_id: json.CheckoutRequestID ?? json.checkout_request_id ?? json.data?.CheckoutRequestID,
+    checkout_request_id,
     raw: json,
   };
 }
