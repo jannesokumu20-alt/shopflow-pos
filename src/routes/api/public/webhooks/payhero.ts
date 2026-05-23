@@ -28,7 +28,7 @@ export const Route = createFileRoute("/api/public/webhooks/payhero")({
           statusRaw === "paid" ||
           resultCode === 0 ||
           resultCode === "0";
-        const newStatus: "paid" | "failed" = success ? "paid" : "failed";
+        const newStatus: "completed" | "failed" = success ? "completed" : "failed";
         const mpesaReceipt: string | null =
           r.MpesaReceiptNumber ?? r.mpesa_receipt_number ?? r.receipt ?? null;
 
