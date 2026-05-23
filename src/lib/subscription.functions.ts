@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendStkPush, normalizeKenyanPhone } from "./payhero.server";
@@ -7,9 +8,11 @@ export const paySubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { userId } = context;
-    const amount = Number(process.env.SUBSCRIPTION_AMOUNT || 499);
+    const amountStr = process.env.SUBSCRIPTION_AMOUNT || "499";
+    const amount = Number(amountStr);
+    if (Number.isNaN(amount) || amount <= 0) throw new Error("Invalid SUBSCRIPTION_AMOUNT");
     const platformChannelId = Number(process.env.PAYHERO_PLATFORM_CHANNEL_ID);
-    if (!platformChannelId) throw new Error("Platform channel not configured");
+    if (Number.isNaN(platformChannelId)) throw new Error("Platform channel not configured");
 
     const { data: shop, error } = await supabaseAdmin
       .from("shops")
@@ -51,9 +54,11 @@ export const paySubscription = createServerFn({ method: "POST" })
     return { subscription_payment_id: sub.id, amount };
   });
 
+const statusSchema = z.object({ id: z.string().uuid() });
+
 export const getSubscriptionPaymentStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator((input) => statusSchema.parse(input))
   .handler(async ({ context, data }) => {
     const { supabase } = context;
     const { data: row, error } = await supabase
