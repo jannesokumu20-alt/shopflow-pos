@@ -110,6 +110,8 @@ export const verifyPin = createServerFn({ method: "POST" })
       .single();
     if (error || !shop) throw new Error("Shop not found");
 
+    if (!shop.pin_hash) throw new Error("PIN not configured for this account");
+
     const now = Date.now();
     if (shop.pin_locked_until && new Date(shop.pin_locked_until).getTime() > now) {
       const mins = Math.ceil((new Date(shop.pin_locked_until).getTime() - now) / 60000);
